@@ -14,7 +14,8 @@ body {
     min-width: 266px;
     min-height: 400px;
     background-color: navy;
-    border-radius: 60px;
+    border: 15px solid black;
+    /*border-radius: 60px;*/
 }
 
 .paddle {
@@ -27,13 +28,13 @@ body {
 }
 
 #player-paddle {
-    align-self: flex-end;
+    /*align-self: flex-end;*/
     top: calc(90% - 0px);
     left: calc(50% - 125px);
 }
 
 #enemy-paddle {
-    align-self: flex-start;
+    /*align-self: flex-start;*/
     top: calc(10% - 30px);
     left: calc(50% - 125px);
 }
@@ -41,30 +42,10 @@ body {
 .ball {
     height: 30px;
     width: 30px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(95, 122, 154, 1) 100%);
     border-radius: 50%;
     position: fixed;
     top: calc(50% - 15px);
     left: calc(50% - 15px);
 }
 
-.ball_effect {
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
-    animation: spinBall 0.1s linear infinite;
-    box-shadow: inset 0 0 18px #fff,
-        inset 6px 0 18px violet,
-        inset -6px 0 18px #0ff,
-        inset 6px 0 30px violet,
-        inset -6px 0 30px #0ff,
-        0 0 18px #fff, -4px 0 18px violet, 4px 0 18px #0ff;
-}
-
-.brilli-brilli {
-    box-shadow: inset 0 0 18px #fff,
-            inset -6px 0 18px #f3bad6,
-            inset 6px 0 18px #0ff,
-            inset -6px 0 30px #f3bad6,
-            inset 6px 0 30px #0ff,
-            0 0 18px #fff, 4px 0 18px #f3bad6, -4px 0 18px #0ff;
-}
