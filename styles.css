@@ -6,13 +6,13 @@ body {
 #container {
     display: flex;
     position: relative;
-    text-align: center;
-    justify-content: center;
+    /*text-align: center;
+    justify-content: center;*/
     margin-top: 30px;
-    width: 60vh;
-    height: 90vh;
-    min-width: 266px;
-    min-height: 400px;
+    width: 470px;
+    height: 704px;
+    /*min-width: 266px;
+    min-height: 400px;*/
     background-color: navy;
     border: 15px solid black;
     /*border-radius: 60px;*/
@@ -30,7 +30,7 @@ body {
 #player-paddle {
     /*align-self: flex-end;*/
     top: calc(90% - 0px);
-    left: calc(50% - 125px);
+    /*left: calc(50% - 125px);*/
 }
 
 #enemy-paddle {
