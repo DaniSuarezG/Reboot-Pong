@@ -36,10 +36,12 @@ function Board() {
 //clase game
 
 function Game(){
+    let self = this
     this.board  = new Board()
     this.player = new Paddle()
     // this.enemy  = new Paddle()
-    let self = this
+
+    this.ball = new Ball()
 
     this.setUpBoard = function () {
         let world   =  document.querySelector('body')
@@ -48,6 +50,10 @@ function Game(){
         this.player.createPaddle('player', this.board.width)
 
         //this.player.html.style.left = ((this.board.width / 2) - (this.player.width / 2)) + 'px'
+
+        this.ball.createBall()
+
+        this.board.html.appendChild(this.ball.html)
 
         this.board.html.appendChild(this.player.html)
         //this.board.html.onmousemove = this.mouseHandler 
@@ -62,7 +68,6 @@ function Game(){
     }
     
 
-
     this.mouseHandler = function (e) {
         let playerRight = e.clientX + (this.player.width / 2)
         let playerLeft  = e.clientX - (this.player.width / 2)
@@ -71,7 +76,8 @@ function Game(){
         let borderLeft  = (window.innerWidth / 2) - (this.board.width / 2) 
 
         if (playerRight < borderRight && playerLeft > borderLeft) {
-            this.player.html.style.left = (e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2)) + 'px'
+            this.player.html.style.left = 
+            (e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2)) + 'px'
 
             /*
             playerRight = e.clientX + (250 / 2)
@@ -79,6 +85,8 @@ function Game(){
             */
         }
     }
+
+    this.timerId = setInterval(this.ball.update, 200)
 }
 
 //clase board
@@ -98,8 +106,8 @@ function Board(){
 
 //clase paddle con dos objetos
 function Paddle(){
-    this.height = 30
-    this.width  = 250
+    this.height = 20
+    this.width  = 150
     this.html   = null
 
     this.createPaddle = function(classP, width){
@@ -111,9 +119,25 @@ function Paddle(){
         this.html.style.left = ((width / 2) - (this.width / 2)) + 'px'
 
     }
+}
+
+//clase para la bola
+function Ball(){
+    this.x = 0
+    this.y = 0
+    this.html = null
+
+    this.createBall = function () {
+        this.html   = document.createElement('div')
+        this.html.classList.add('ball')
+    }
+
+    this.update = function() {
+        //console.log(this)
+        this.html.style.transform = `translate(${this.x + 5} px, ${this.y + 5} px)` 
+    }
 
 }
-//clase para la bola
 
 let game = new Game()
 game.setUpBoard()
