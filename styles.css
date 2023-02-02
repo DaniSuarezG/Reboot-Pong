@@ -9,9 +9,9 @@ body {
     /*text-align: center;
     justify-content: center;*/
     margin-top: 30px;
-    width: 470px;
+    /*width: 470px;
     height: 704px;
-    /*min-width: 266px;
+    min-width: 266px;
     min-height: 400px;*/
     background-color: navy;
     border: 15px solid black;
@@ -20,8 +20,8 @@ body {
 
 .paddle {
     background-color: green;
-    width: 250px;
-    height: 30px;
+    /*width: 250px;
+    height: 30px;*/
     border: 2px solid yellow;
     border-radius: 50px;
     position: absolute;
@@ -36,7 +36,7 @@ body {
 #enemy-paddle {
     /*align-self: flex-start;*/
     top: calc(10% - 30px);
-    left: calc(50% - 125px);
+    /*left: calc(50% - 125px);*/
 }
 
 .ball {
