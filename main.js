@@ -1,3 +1,4 @@
+/*
 function Board() {
     let player = document.querySelector('#player-paddle')
     player.style.left = '120px'
@@ -30,5 +31,52 @@ function Board() {
     }
 }
 
-let game = new Board()
+//let game = new Board()*/
 
+//clase game
+
+function Game(){
+    this.board  = new Board()
+    this.player = new Paddle()
+    this.enemy  = new Paddle()
+    
+    this.world =  document.querySelector('body')
+
+    let playerHtml = this.player.innerHTML
+    let enemyHtml = this.enemy.innerHTML
+    this.board.html.appendChild(this.player.html)
+    this.world.appendChild(this.board.html)
+}
+
+//clase board
+function Board(){
+    this.createHTML = function (){
+        this.html = document.createElement('div')
+        this.html.id = 'board'
+    }
+    this.createHTML()
+    this.height = 700
+    this.html.style.height = this.height + 'px'   
+    this.width = this.height * this.ratio
+    this.html.style.width = this.width + 'px' 
+}
+Board.prototype.ratio = 4/7
+
+//clase paddle con dos objetos
+function Paddle(){
+    
+    this.createHTML = function(){
+        this.html = document.createElement('div')
+        this.html.id = 'player-paddle'
+        this.html.classList.add('paddle')
+    }
+    this.createHTML()
+    this.height = 30
+    this.html.style.height = this.height + 'px'
+    this.width = 250
+    this.html.style.width = this.width + 'px'
+}
+//clase para la bola
+
+let game = new Game()
+console.log(game)
