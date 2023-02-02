@@ -39,6 +39,7 @@ function Game(){
     let self = this
     this.board  = new Board()
     this.player = new Paddle()
+    this.timerId = null;
     // this.enemy  = new Paddle()
 
     this.ball = new Ball()
@@ -86,7 +87,9 @@ function Game(){
         }
     }
 
-    this.timerId = setInterval(this.ball.update, 200)
+    this.startGame = function() {
+        setInterval(self.ball.update, 200)
+    }
 }
 
 //clase board
@@ -123,22 +126,24 @@ function Paddle(){
 
 //clase para la bola
 function Ball(){
+    self = this
     this.x = 0
     this.y = 0
     this.html = null
 
     this.createBall = function () {
-        this.html   = document.createElement('div')
+        this.html = document.createElement('div')
         this.html.classList.add('ball')
     }
 
     this.update = function() {
-        //console.log(this)
-        this.html.style.transform = `translate(${this.x + 5} px, ${this.y + 5} px)` 
+        console.log('UODATE')
+        self.html.style.transform = `translate(${this.x + 5} px, ${this.y + 5} px)` 
     }
 
 }
 
 let game = new Game()
 game.setUpBoard()
+game.startGame()
 console.log(game)
