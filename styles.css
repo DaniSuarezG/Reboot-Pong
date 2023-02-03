@@ -29,7 +29,6 @@ body {
 
 #player-paddle {
     /*align-self: flex-end;*/
-    top: calc(90% - 0px);
     /*left: calc(50% - 125px);*/
 }
 
