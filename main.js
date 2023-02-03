@@ -87,18 +87,16 @@ function Game(){
     }
 
     this.bounceHandler = function () {
-        let borderRight = (window.innerWidth / 2) 
-        let borderLeft = (window.innerWidth / 2) - (this.board.width / 2)
-        let borderUp = (window.innerHeight / 2) - (this.board.height / 2)
-        let borderDown = (window.innerHeight / 2) + (this.board.height / 2)
+        let borderRight = this.board.width
+        let borderLeft = 0
+        let borderUp = 0
+        let borderDown = this.board.height
 
-        let ballRight = this.ball.x + 15
-        let ballLeft = this.ball.x - 15
-        let ballUp = this.ball.y - 15
-        let ballDown = this.ball.y + 15
-        
-        console.log("Bordes: ", borderRight, borderDown, borderLeft, borderUp)
-        console.log("ball: ", ballRight, ballDown, ballLeft, ballUp)
+        let ballRight = this.ball.x + 30
+        let ballLeft = this.ball.x
+        let ballUp = this.ball.y
+        let ballDown = this.ball.y + 30
+         
 
         if (ballRight >= borderRight) { 
             if(this.ball.dir === 'UR'){
