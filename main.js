@@ -52,8 +52,7 @@ function Game(){
 
         //this.player.html.style.left = ((this.board.width / 2) - (this.player.width / 2)) + 'px'
 
-        this.ball.createBall()
-
+       
         this.board.html.appendChild(this.ball.html)
 
         this.board.html.appendChild(this.player.html)
@@ -87,8 +86,58 @@ function Game(){
         }
     }
 
+    this.bounceHandler = function () {
+        let borderRight = (window.innerWidth / 2) 
+        let borderLeft = (window.innerWidth / 2) - (this.board.width / 2)
+        let borderUp = (window.innerHeight / 2) - (this.board.height / 2)
+        let borderDown = (window.innerHeight / 2) + (this.board.height / 2)
+
+        let ballRight = this.ball.x + 15
+        let ballLeft = this.ball.x - 15
+        let ballUp = this.ball.y - 15
+        let ballDown = this.ball.y + 15
+        
+        console.log("Bordes: ", borderRight, borderDown, borderLeft, borderUp)
+        console.log("ball: ", ballRight, ballDown, ballLeft, ballUp)
+
+        if (ballRight >= borderRight) { 
+            if(this.ball.dir === 'UR'){
+                this.ball.changeDir('UL')
+            }else if (this.ball.dir === 'DR'){
+                this.ball.changeDir('DL')
+            }
+        }
+
+        if (ballLeft <= borderLeft) {
+            if (this.ball.dir === 'UL') {
+                this.ball.changeDir('UR')
+            } else if (this.ball.dir === 'DL') {
+                this.ball.changeDir('DR')
+            }
+        }
+
+        if (ballUp <= borderUp) { 
+            if (this.ball.dir === 'UR') {
+                this.ball.changeDir('DR')
+            } else if (this.ball.dir === 'UL') {
+                this.ball.changeDir('DL')
+            }
+        }
+
+        if (ballDown >= borderDown) { 
+            if (this.ball.dir === 'DL') {
+                this.ball.changeDir('UL')
+            } else if (this.ball.dir === 'DR') {
+                this.ball.changeDir('UR')
+            }
+        }
+    }
+
     this.startGame = function() {
-        setInterval(self.ball.update, 200)
+        setInterval(function() {
+            self.ball.move()
+            self.bounceHandler()
+        }, 35)
     }
 }
 
@@ -126,20 +175,53 @@ function Paddle(){
 
 //clase para la bola
 function Ball(){
-    self = this
-    this.x = 0
-    this.y = 0
-    this.html = null
-
-    this.createBall = function () {
-        this.html = document.createElement('div')
-        this.html.classList.add('ball')
-    }
-
-    this.update = function() {
+    let self  = this
+    this.x    = 200
+    this.y    = 350
+    this.dir  = 'UR' // direccion
+    this.step = 5    // velocidad
+    this.html = document.createElement('div')
+    this.html.classList.add('ball')
+    self.html.style.left = `${self.x}px`
+    self.html.style.top  = `${self.y}px`
+   
+    /*this.update = function() {
         console.log('UODATE')
         self.html.style.transform = `translate(${this.x + 5} px, ${this.y + 5} px)` 
+    }*/
+
+
+    this.move = function(){
+        console.log()
+        switch(self.dir){
+            case 'UR':
+                self.x += self.step
+                self.y -= self.step                   
+                break;
+            case 'UL':
+                self.x -= self.step
+                self.y -= self.step 
+                break
+            case 'DR':
+                self.x += self.step
+                self.y += self.step 
+                break
+            case 'DL': 
+                self.x -= self.step
+                self.y += self.step 
+        }
+        self.html.style.left = `${self.x}px`
+        self.html.style.top = `${self.y}px`        
     }
+
+    this.speed = function(speed) {
+        this.step = speed
+    } 
+
+    this.changeDir = function(dir) {
+        this.dir = dir
+    }
+
 
 }
 

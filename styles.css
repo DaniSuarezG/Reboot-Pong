@@ -44,8 +44,8 @@ body {
     width: 30px;
     background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(95, 122, 154, 1) 100%);
     border-radius: 50%;
-    position: fixed;
-    top: calc(50% - 15px);
-    left: calc(50% - 15px);
+    position: absolute;
+    /*top: calc(50% - 15px);
+    left: calc(50% - 15px);*/
 }
 
