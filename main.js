@@ -39,8 +39,8 @@ function Game(){
     let self = this
     this.board  = new Board()
     this.player = new Paddle()
+    this.enemy  = new Paddle()
     this.timerId = null;
-    // this.enemy  = new Paddle()
 
     this.ball = new Ball()
 
@@ -48,183 +48,74 @@ function Game(){
         let world   =  document.querySelector('body')
 
         this.board.createBoard()
+
         this.player.createPaddle('player', this.board.width, this.board.height)
-
-        //this.player.html.style.left = ((this.board.width / 2) - (this.player.width / 2)) + 'px'
-
+        this.enemy.createPaddle('enemy', this.board.width, this.board.height)
        
         this.board.html.appendChild(this.ball.html)
-
         this.board.html.appendChild(this.player.html)
+        this.board.html.appendChild(this.enemy.html)
+
         //this.board.html.onmousemove = this.mouseHandler 
         this.board.html.addEventListener('mousemove', function(e) {
             self.mouseHandler(e)
         })
-
-        
-        //this.board.html.appendChild(this.enemy.html)
 
         world.appendChild(this.board.html)
     }
     
 
     this.mouseHandler = function (e) {
-        let playerRight = e.clientX + (this.player.width / 2)
-        let playerLeft  = e.clientX - (this.player.width / 2)
+        let playerRight = e.clientX + (self.player.width / 2)
+        let playerLeft  = e.clientX - (self.player.width / 2)
+        let playerTop = e.clientY - (self.player.height / 2)
+        let playerDown  = e.clientY + (self.player.height / 2)
 
-        let borderRight = (window.innerWidth / 2) + (this.board.width / 2) 
-        let borderLeft  = (window.innerWidth / 2) - (this.board.width / 2) 
+        let borderRight = (window.innerWidth / 2) + (self.board.width / 2) 
+        let borderLeft  = (window.innerWidth / 2) - (self.board.width / 2) 
+        let borderTop = (window.innerHeight / 2) - (self.board.height / 2) 
+        let borderDown  = (window.innerHeight / 2) + (self.board.height / 2) 
 
         if (playerRight < borderRight && playerLeft > borderLeft) {
-            this.player.left = (e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2))
+            //this.player.left = (e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2))
+            self.player.updateMove((e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2)))
+            //this.player.html.style.left = this.player.left + 'px'
+        }
+
+        //if (playerTop > borderTop && playerDown < borderDown) {
+            //this.player.top = (e.clientY - (window.innerHeight / 2) + (this.board.height / 2) - (this.player.height / 2))
            // this.player.updateMove((e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2)) + 'px')
-            this.player.html.style.left = this.player.left + 'px'
+            //this.player.html.style.top = this.player.top + 'px'
 
             /*
             playerRight = e.clientX + (250 / 2)
             playerLeft  = e.clientX - (250 / 2)
             */
+        //}
+    }
+
+    this.enemyHandler = function() {
+        let enemyRight = this.ball.x + this.ball.width / 2 + (this.enemy.width / 2)
+        let enemyLeft  = this.ball.x + this.ball.width / 2 - (this.enemy.width / 2)
+        
+        let borderRight = this.board.width 
+        let borderLeft  = 0 
+        if (enemyLeft > borderLeft && enemyRight < borderRight) {//} && enemyLeft > borderLeft) {
+            this.enemy.updateMove(this.ball.x + this.ball.width / 2 - this.enemy.width / 2)
         }
     }
 
-    this.bounceHandler = function () {
-        let borderRight = this.board.width
-        let borderLeft  = 0
-        let borderUp    = 0
-        let borderDown  = this.board.height
-
-        let paddleRight = this.player.left + this.player.width
-        let paddleLeft  = this.player.left
-        let paddleUp    = this.player.top
-        let paddleDown  = this.player.top + this.player.height
-
-       //console.log("paddle: ", paddleDown, paddleLeft, paddleRight, paddleUp)
-       // console.log(this.player.html.style)
-
-        let ballRight = this.ball.x + 30
-        let ballLeft = this.ball.x
-        let ballUp = this.ball.y
-        let ballDown = this.ball.y + 30
-         
-
-        if (ballRight >= borderRight) { 
-            if(this.ball.dir === 'UR'){
-                this.ball.changeDir('UL')
-            }else if (this.ball.dir === 'DR'){
-                this.ball.changeDir('DL')
-            }
-        }
-
-        if (ballLeft <= borderLeft) {
-            if (this.ball.dir === 'UL') {
-                this.ball.changeDir('UR')
-            } else if (this.ball.dir === 'DL') {
-                this.ball.changeDir('DR')
-            }
-        }
-
-        if (ballUp <= borderUp) { 
-            if (this.ball.dir === 'UR') {
-                this.ball.changeDir('DR')
-            } else if (this.ball.dir === 'UL') {
-                this.ball.changeDir('DL')
-            }
-        }
-
-        if (ballDown >= borderDown) { 
-            if (this.ball.dir === 'DL') {
-                this.ball.changeDir('UL')
-            } else if (this.ball.dir === 'DR') {
-                this.ball.changeDir('UR')
-            }
-        }
-
-         if ((ballLeft  <= paddleRight) &&
-             (ballRight >= paddleLeft) &&
-             (ballUp    <= paddleDown) &&
-             (ballDown  >= paddleUp)){
-                console.log("hay colision")
-                /*if(ballLeft <= paddleRight){
-                    console.log("por la derecha")
-                    if (this.ball.dir === `DL`) {
-                        this.ball.dir = 'DR'
-                    } else if (this.ball.dir === 'UL') {
-                        this.ball.dir = 'UR'
-                    }
-                }*/
-
-                if (this.ball.dir === `DL`){
-                    if (ballLeft <= paddleRight){
-                        this.ball.dir = 'DR'
-                    } else if (ballDown >= paddleUp){
-                        this.ball.dir = 'UL'
-                    }
-                }
-
-                if (this.ball.dir === `DR`){
-                    if (ballRight >= paddleLeft){
-                        this.ball.dir = 'DL'
-                    } else if (ballDown >= paddleUp){
-                        this.ball.dir = 'UR'
-                    }
-                }
-
-                if (this.ball.dir === 'UL') {
-                    if (ballUp <= paddleDown) {
-                        this.ball.dir = 'DL'
-                    } else if (ballLeft <= paddleRight) {
-                        this.ball.dir = 'UR'
-                    }
-                }
-
-                if (this.ball.dir === 'UR') {
-                    if (ballUp <= paddleDown) {
-                        this.ball.dir = 'DR'
-                    } else if (ballRight >= paddleLeft) {
-                        this.ball.dir = 'UL'
-                    }
-                }
-
-
-
-
-                /*if(ballRight >= paddleLeft){
-                    console.log("por la izquierda")
-                    if (this.ball.dir === `DR`) {
-                        this.ball.dir = 'DL'
-                    } else if (this.ball.dir === 'UR') {
-                        this.ball.dir = 'UL'
-                    }
-                }
-
-                if(ballDown >= paddleUp){
-                    console.log("por arriba")
-                    if(this.ball.dir === `DR`){
-                        this.ball.dir = 'UR'
-                    } else if(this.ball.dir === 'DL'){
-                        this.ball.dir = 'UL'
-                    }
-                }
-
-                if (ballUp <= paddleDown){
-                    console.log("por abajo")
-                    if (this.ball.dir === `UR`) {
-                        this.ball.dir = 'DR'
-                    } else if (this.ball.dir === 'UL') {
-                        this.ball.dir = 'DL'
-                    }
-                }*/
-            }
-
-       /* if ((ballDown === paddleUp || ballUp === paddleDown ) && ballLeft <= paddleRight && ballRight >= paddleLeft) {
-            console.log('hay colisión')
-        }*/
+    this.bounceHandler = function () {        
+        this.ball.borderCollision(this.board)
+        this.ball.playerCollision(this.player)
+        this.ball.playerCollision(this.enemy)
     }
 
     this.startGame = function() {
         setInterval(function() {
             self.ball.move()
             self.bounceHandler()
+            self.enemyHandler()
         }, 35)
     }
 }
@@ -234,11 +125,14 @@ function Board(){
     this.height = 700
     this.ratio  = 4/7
     this.width  = this.height * this.ratio
+    
     this.html   = null
 
     this.createBoard = function (){
         this.html    = document.createElement('div')
+
         this.html.id = 'board'
+
         this.html.style.height = this.height + 'px'    
         this.html.style.width  = this.width + 'px' 
     }
@@ -246,41 +140,77 @@ function Board(){
 
 //clase paddle con dos objetos
 function Paddle(){
-    this.height = 20
-    this.width  = 150
+    let self  = this
+
+    this.height = 20 //DEFAULT: 20
+    this.width  = 150 //DEFAULT: 150
+    this.left   = 0
+    this.top    = 0
+
+    this.roll = ""
+
     this.html   = null
-    this.left = 0
-    this.top = 0
 
     this.createPaddle = function(classP, width, height){
-        this.html     = document.createElement('div')
-        this.html.id  = `${classP}-paddle`
+        let pos = 0
+        switch (classP) {
+            case 'player': pos = 0.9; break
+            case 'enemy': pos = 0.1; break
+        }
+
+        this.roll = classP
+        
+        this.html = document.createElement('div')
+        
+        this.html.id = `${classP}-paddle`
         this.html.classList.add('paddle')
+        
         this.html.style.height = this.height + 'px'
         this.html.style.width  = this.width + 'px'
-        this.left = width
-        this.html.style.left = ((width / 2) - (this.width / 2)) + 'px'
-        this.top = height * 0.5
-        this.html.style.top = this.top + 'px'
+        
+        this.left = ((width / 2) - (this.width / 2)) // width
+        this.top  = height * pos
+        this.html.style.left = this.left + 'px'
+        this.html.style.top  = this.top + 'px'
     }
 
     this.updateMove = function(left){
-        this.left = left
-        this.html.style.left = this.left + 'px'
+        switch (this.roll) {
+            case 'player': self.left = left; break
+            case 'enemy': self.left = left; break //IMPLEMENTAR MOVIMIENTO ERRÁTICO
+        }
+        //self.left = left
+        self.html.style.left = self.left + 'px'
+        //console.log(Math.round(Math.random() * 10))
     }
 }
 
 //clase para la bola
 function Ball(){
-    let self  = this
-    this.x    = 200
-    this.y    = 350
+    let self = this
+
+    this.width = 30
+    this.height = 30
+
+    this.x = 200
+    this.y = 350
+
+    this.ballTop = this.y
+    this.ballBottom = this.y + this.height
+    this.ballLeft = this.x
+    this.ballRight = this.x + this.width
+
     this.dir  = 'UR' // direccion
     this.step = 5    // velocidad
+
     this.html = document.createElement('div')
+
     this.html.classList.add('ball')
-    self.html.style.left = `${self.x}px`
-    self.html.style.top  = `${self.y}px`
+
+    this.html.style.left = `${this.x}px`
+    this.html.style.top  = `${this.y}px`
+    this.html.style.height = `${this.height}px`
+    this.html.style.width  = `${this.width}px`
    
     /*this.update = function() {
         console.log('UODATE')
@@ -308,7 +238,12 @@ function Ball(){
                 self.y += self.step 
         }
         self.html.style.left = `${self.x}px`
-        self.html.style.top = `${self.y}px`        
+        self.html.style.top = `${self.y}px`
+
+        self.ballRight = self.x + self.width
+        self.ballLeft = self.x
+        self.ballTop = self.y
+        self.ballBottom = self.y + self.height
     }
 
     this.speed = function(speed) {
@@ -319,6 +254,97 @@ function Ball(){
         this.dir = dir
     }
 
+    this.borderCollision = function(board) {
+        let borderRight = board.width
+        let borderLeft = 0
+        let borderTop = 0
+        let borderBottom = board.height
+
+        if (self.ballRight >= borderRight) { 
+            if(self.dir === 'UR'){
+                self.changeDir('UL')
+            }else if (self.dir === 'DR'){
+                self.changeDir('DL')
+            }
+        }
+
+        if (self.ballLeft <= borderLeft) {
+            if (self.dir === 'UL') {
+                self.changeDir('UR')
+            } else if (self.dir === 'DL') {
+                self.changeDir('DR')
+            }
+        }
+
+        if (self.ballTop <= borderTop) { 
+            if (self.dir === 'UR') {
+                self.changeDir('DR')
+            } else if (self.dir === 'UL') {
+                self.changeDir('DL')
+            }
+        }
+
+        if (self.ballBottom >= borderBottom) { 
+            if (self.dir === 'DL') {
+                self.changeDir('UL')
+            } else if (self.dir === 'DR') {
+                self.changeDir('UR')
+            }
+        }
+    }
+
+    this.playerCollision = function (player) {
+        //console.log(self.pixels.map(elem => elem.map(elem => obj.pixels.reduce(elem => elem.includes()).includes(elem))).reduce(elem => elem == true))
+        //console.log(self.pixels[2].map(elem => obj.pixels[2].includes(elem)))
+        //console.log(this.html.getBoundingClientRect())
+
+        let paddleRight  = player.left + player.width
+        let paddleLeft   = player.left
+        let paddleTop    = player.top
+        let paddleBottom = player.top + player.height
+
+        /*if ((this.ballLeft  <= paddleRight) &&
+            (this.ballRight >= paddleLeft) &&
+            (this.ballTop    <= paddleDown) &&
+            (this.ballBottom  >= paddleUp)) {*/
+
+        switch (player.roll) {
+            case 'player':
+                if (self.ballBottom >= paddleTop &&
+                    self.ballRight >= paddleLeft &&
+                    self.ballLeft < paddleRight &&
+                    self.ballTop < paddleTop) {
+                    console.log("COLISION PLAYER")
+                    switch(self.dir) {
+                        case 'DL':
+                            self.dir = 'UL'
+                            break
+                        case 'DR':
+                            self.dir = 'UR'
+                            break
+                    }
+                };
+                break
+
+            case 'enemy':
+                if (self.ballBottom >= paddleTop &&
+                    self.ballRight >= paddleLeft &&
+                    self.ballLeft < paddleRight &&
+                    self.ballTop < paddleBottom) {
+                    console.log("COLISION ENEMY")
+                    switch(self.dir) {
+                        case 'UL':
+                            self.dir = 'DL'
+                            break
+                        case 'UR':
+                            self.dir = 'DR'
+                            break
+                    }
+                };
+                break
+        }
+        //}
+    }
 
 }
 

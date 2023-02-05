@@ -34,13 +34,13 @@ body {
 
 #enemy-paddle {
     /*align-self: flex-start;*/
-    top: calc(10% - 30px);
+    /*top: calc(10% - 30px);*/
     /*left: calc(50% - 125px);*/
 }
 
 .ball {
-    height: 30px;
-    width: 30px;
+    /*height: 30px;
+    width: 30px;*/
     background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(95, 122, 154, 1) 100%);
     border-radius: 50%;
     position: absolute;
