@@ -1,5 +1,13 @@
 let backgroundMusic = new Audio('./assets/audio/background.mp3')
-let popSound = new Audio('https://www.epidemicsound.com/track/h7KUVVeWvh/')
+let popSound = new Audio('./assets/audio/cork-pop.mp3')
+let glass1Sound = new Audio('./assets/audio/GlassShattering1.mp3')
+let glass2Sound = new Audio('./assets/audio/GlassShattering2.mp3')
+let glass3Sound = new Audio('./assets/audio/GlassShattering3.mp3')
+let metalDropSound = new Audio('./assets/audio/metal-drop.mp3')
+let metalSmallBellSound = new Audio('./assets/audio/metal-small-door-bell.wav')
+let zippoSound = new Audio('./assets/audio/metal-zippo.mp3')
+let powerUpSound = new Audio('./assets/audio/power-up.mp3')
+let metalHardDropSound = new Audio('./assets/audio/metal-hit-drop.mp3')
 
 
 // backgroundMusic.play()
@@ -227,6 +235,7 @@ function Game(){
         self.player.resetPaddle(self.board.width, self.board.height)
         self.enemy.resetPaddle(self.board.width, self.board.height)
         self.ball.resetBall(self.board.width, self.board.height)
+
     }
 
     this.pauseGameBtn = function () {
@@ -244,6 +253,9 @@ function Game(){
 
             self.board.html.onmousemove = ''
         }
+
+        popSound.play()
+
 
         // backgroundMusic.pause()
 
@@ -268,6 +280,8 @@ function Game(){
 
         self.btnReset.html.onclick = ''
         self.btnPause.html.onclick = ''
+
+        popSound.play()
 
     }
 }
@@ -507,6 +521,7 @@ function Ball(){
         let borderBottom = board.height
 
         if (self.ballRight >= borderRight) { 
+            self.sound()
             if(self.dir === 'UR'){
                 self.changeDir('UL')
             }else if (self.dir === 'DR'){
@@ -515,6 +530,7 @@ function Ball(){
         }
 
         if (self.ballLeft <= borderLeft) {
+            self.sound()
             if (self.dir === 'UL') {
                 self.changeDir('UR')
             } else if (self.dir === 'DL') {
@@ -524,6 +540,7 @@ function Ball(){
 
         if (self.ballTop <= borderTop) { 
             scoreBoard.updateScores('player')
+            powerUpSound.play()
             return true
             if (self.dir === 'UR') {
                 self.changeDir('DR')
@@ -534,6 +551,7 @@ function Ball(){
 
         if (self.ballBottom >= borderBottom) { 
             scoreBoard.updateScores('enemy')
+            metalHardDropSound.play()
             return true
             if (self.dir === 'DL') {
                 self.changeDir('UL')
@@ -565,6 +583,7 @@ function Ball(){
                     self.ballLeft < paddleRight &&
                     self.ballTop < paddleTop) {
                     console.log("COLISION PLAYER")
+                    popSound.play()
                     switch(self.dir) {
                         case 'DL':
                             self.dir = 'UL'
@@ -582,6 +601,8 @@ function Ball(){
                     self.ballLeft < paddleRight &&
                     self.ballTop < paddleBottom) {
                     console.log("COLISION ENEMY")
+                    popSound.play()
+
                     switch(self.dir) {
                         case 'UL':
                             self.dir = 'DL'
@@ -595,6 +616,19 @@ function Ball(){
                 break
         }
         //}
+    }
+
+    this.sound = function () {
+        let rand = Math.ceil(Math.random() * 2)
+
+            console.log(rand)
+
+        switch(rand) {
+            case 1: zippoSound.play(); break
+            // case 2: metalDropSound.play(); break
+            case 2: metalSmallBellSound.play(); break
+        }
+
     }
 
 }
