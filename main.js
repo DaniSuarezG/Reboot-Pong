@@ -37,34 +37,46 @@ function Board() {
 
 function Game(){
     let self = this
-    this.board  = new Board()
+    this.board = new Board()
+    this.btnStart = new BtnStart()
     this.player = new Paddle()
     this.enemy  = new Paddle()
-    this.timerId = null;
-
+    this.scoreBoard = new ScoreBoard()
     this.ball = new Ball()
 
+    this.timerId = null;
+    this.timerIdSetUp = null;
+
+    this.world = null;
+
+
     this.setUpBoard = function () {
-        let world   =  document.querySelector('body')
+        this.world = document.querySelector('body')
 
         this.board.createBoard()
+        this.btnStart.createStart(this.board.width, this.board.height)
 
         this.player.createPaddle('player', this.board.width, this.board.height)
         this.enemy.createPaddle('enemy', this.board.width, this.board.height)
+
+        this.ball.createBall(this.board.width, this.board.height)
+        this.scoreBoard.createScoreBoard(this.board.width, this.board.height)
        
+        this.board.html.appendChild(this.scoreBoard.html)
         this.board.html.appendChild(this.ball.html)
         this.board.html.appendChild(this.player.html)
         this.board.html.appendChild(this.enemy.html)
+        this.board.html.appendChild(this.btnStart.html)
 
-        //this.board.html.onmousemove = this.mouseHandler 
-        this.board.html.addEventListener('mousemove', function(e) {
-            self.mouseHandler(e)
-        })
+        // this.board.html.addEventListener('mousemove', function(e) {
+            //     self.mouseHandler(e)
+            // })
+            
+        this.btnStart.html.onclick = self.startGame
 
-        world.appendChild(this.board.html)
+        this.world.appendChild(this.board.html)
     }
     
-
     this.mouseHandler = function (e) {
         let playerRight = e.clientX + (self.player.width / 2)
         let playerLeft  = e.clientX - (self.player.width / 2)
@@ -78,7 +90,7 @@ function Game(){
 
         if (playerRight < borderRight && playerLeft > borderLeft) {
             //this.player.left = (e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2))
-            self.player.updateMove((e.clientX - (window.innerWidth / 2) + (this.board.width / 2) - (this.player.width / 2)))
+            self.player.updateMove((e.clientX - (window.innerWidth / 2) + (self.board.width / 2) - (self.player.width / 2)))
             //this.player.html.style.left = this.player.left + 'px'
         }
 
@@ -106,17 +118,55 @@ function Game(){
     }
 
     this.bounceHandler = function () {        
-        this.ball.borderCollision(this.board)
+        if (this.ball.borderCollision(this.board, this.scoreBoard)) {
+            this.pauseGame()
+        }
         this.ball.playerCollision(this.player)
         this.ball.playerCollision(this.enemy)
     }
 
     this.startGame = function() {
-        setInterval(function() {
-            self.ball.move()
-            self.bounceHandler()
-            self.enemyHandler()
-        }, 35)
+        self.timerIdSetUp = setTimeout(function () {
+            self.btnStart.html.style.top = '400px'
+            self.btnStart.html.style.display = 'none'
+            self.board.html.style.cursor = 'none'
+
+            self.board.html.onmousemove = self.mouseHandler
+            self.ball.html.style.display = ''
+            self.player.html.style.display = ''
+            self.enemy.html.style.display = ''
+            
+            // self.board.html.appendChild(self.ball.html)
+
+            // self.world.removeChild(self.board.html)
+            // self.world.appendChild(self.board.html)
+
+            self.scoreBoard.spanPlayer.classList.remove('noShowSB')
+            self.scoreBoard.spanEnemy.classList.remove('noShowSB')
+            self.scoreBoard.spanSeparator.classList.remove('noShowSB')
+            // self.scoreBoard.spanPlayer.classList.add('showSB')
+            // self.scoreBoard.spanEnemy.classList.add('showSB')
+            // self.scoreBoard.spanSeparator.classList.add('showSB')
+            
+            self.timerId = setInterval(function() {
+                self.ball.move()
+                self.bounceHandler()
+                self.enemyHandler()
+            }, 35)
+        }, 0.4)
+    }
+
+    this.pauseGame = function () {
+        clearInterval(self.timerId)
+        clearTimeout(self.timerIdSetUp)
+        self.board.html.style.cursor = ''
+        self.btnStart.html.style.display = ''
+        self.btnStart.html.onclick = self.startGame
+        self.board.html.onmousemove = null
+        // self.ball.html.style.display = 'none'
+        self.player.resetPaddle(self.board.width, self.board.height)
+        self.enemy.resetPaddle(self.board.width, self.board.height)
+        self.ball.resetBall(self.board.width, self.board.height)
     }
 }
 
@@ -144,18 +194,19 @@ function Paddle(){
 
     this.height = 20 //DEFAULT: 20
     this.width  = 150 //DEFAULT: 150
-    this.left   = 0
-    this.top    = 0
+
+    this.left = 0
+    this.top  = 0
+    this.pos  = 0
 
     this.roll = ""
 
     this.html   = null
 
     this.createPaddle = function(classP, width, height){
-        let pos = 0
         switch (classP) {
-            case 'player': pos = 0.9; break
-            case 'enemy': pos = 0.1; break
+            case 'player': this.pos = 0.9; break
+            case 'enemy': this.pos = 0.1; break
         }
 
         this.roll = classP
@@ -169,7 +220,7 @@ function Paddle(){
         this.html.style.width  = this.width + 'px'
         
         this.left = ((width / 2) - (this.width / 2)) // width
-        this.top  = height * pos
+        this.top  = height * this.pos
         this.html.style.left = this.left + 'px'
         this.html.style.top  = this.top + 'px'
     }
@@ -182,6 +233,14 @@ function Paddle(){
         //self.left = left
         self.html.style.left = self.left + 'px'
         //console.log(Math.round(Math.random() * 10))
+    }
+
+    this.resetPaddle = function(width, height) {
+        this.left = ((width / 2) - (this.width / 2))
+        this.top  = height * this.pos
+        this.html.style.left = this.left + 'px'
+        this.html.style.top  = this.top + 'px'
+        this.html.style.display = 'none'
     }
 }
 
@@ -203,47 +262,91 @@ function Ball(){
     this.dir  = 'UR' // direccion
     this.step = 5    // velocidad
 
-    this.html = document.createElement('div')
+    this.html = null;
 
-    this.html.classList.add('ball')
-
-    this.html.style.left = `${this.x}px`
-    this.html.style.top  = `${this.y}px`
-    this.html.style.height = `${this.height}px`
-    this.html.style.width  = `${this.width}px`
-   
+    
     /*this.update = function() {
         console.log('UODATE')
         self.html.style.transform = `translate(${this.x + 5} px, ${this.y + 5} px)` 
     }*/
+    
+    this.createBall = function (width, height) {
+        this.html = document.createElement('div')
+    
+        this.html.classList.add('ball')
+        this.html.classList.add('glowing')
+    
+        
+        this.x = width / 2
+        this.y = height / 2
 
+        this.html.style.left = `${this.x - this.height / 2}px`
+        this.html.style.top  = `${this.y - this.width / 2}px`
+
+        this.html.style.height = `${this.height}px`
+        this.html.style.width  = `${this.width}px`
+
+        this.html.style.display = 'none'
+        
+    }
+
+    this.resetBall = function(width, height) {
+        this.x = width / 2 //200
+        this.y = height / 2 //350
+        this.html.style.left = `${this.x - this.height / 2}px`
+        this.html.style.top  = `${this.y - this.width / 2}px`
+        this.html.style.display = 'none'
+
+        // this.html.style.display = ''
+    }
 
     this.move = function(){
         
         switch(self.dir){
             case 'UR':
                 self.x += self.step
-                self.y -= self.step                   
-                break;
+                self.y -= self.step                 
+                this.html.classList.add('glowingUR')
+                this.html.classList.remove('glowingDL')
+                this.html.classList.remove('glowingDR')
+                this.html.classList.remove('glowingUL')
+                break
+
             case 'UL':
                 self.x -= self.step
                 self.y -= self.step 
+                this.html.classList.add('glowingUL')
+                this.html.classList.remove('glowingDL')
+                this.html.classList.remove('glowingDR')
+                this.html.classList.remove('glowingUR')
                 break
+
             case 'DR':
                 self.x += self.step
                 self.y += self.step 
+                this.html.classList.add('glowingDR')
+                this.html.classList.remove('glowingDL')
+                this.html.classList.remove('glowingUL')
+                this.html.classList.remove('glowingUR')
                 break
+
             case 'DL': 
                 self.x -= self.step
-                self.y += self.step 
-        }
-        self.html.style.left = `${self.x}px`
-        self.html.style.top = `${self.y}px`
+                self.y += self.step
+                this.html.classList.add('glowingDL')
+                this.html.classList.remove('glowingDR')
+                this.html.classList.remove('glowingUL')
+                this.html.classList.remove('glowingUR')
+                break
 
-        self.ballRight = self.x + self.width
-        self.ballLeft = self.x
-        self.ballTop = self.y
-        self.ballBottom = self.y + self.height
+        }
+        self.html.style.left = `${self.x - self.width / 2}px`
+        self.html.style.top = `${self.y - self.height / 2}px`
+
+        self.ballRight = self.x + self.width / 2
+        self.ballLeft = self.x - self.width / 2
+        self.ballTop = self.y - self.height / 2
+        self.ballBottom = self.y + self.height / 2
     }
 
     this.speed = function(speed) {
@@ -254,7 +357,7 @@ function Ball(){
         this.dir = dir
     }
 
-    this.borderCollision = function(board) {
+    this.borderCollision = function(board, scoreBoard) {
         let borderRight = board.width
         let borderLeft = 0
         let borderTop = 0
@@ -277,6 +380,8 @@ function Ball(){
         }
 
         if (self.ballTop <= borderTop) { 
+            scoreBoard.updateScores('player')
+            return true
             if (self.dir === 'UR') {
                 self.changeDir('DR')
             } else if (self.dir === 'UL') {
@@ -285,6 +390,8 @@ function Ball(){
         }
 
         if (self.ballBottom >= borderBottom) { 
+            scoreBoard.updateScores('enemy')
+            return true
             if (self.dir === 'DL') {
                 self.changeDir('UL')
             } else if (self.dir === 'DR') {
@@ -348,7 +455,93 @@ function Ball(){
 
 }
 
+function ScoreBoard(){
+    let self = this
+
+    this.width = 300
+    this.height = 300
+
+    this.left = 0
+    this.top = 0
+
+    this.playerPoints = 0
+    this.enemyPoints = 0
+
+    this.html = null
+    
+    this.createScoreBoard = function (width, height){
+        this.html = document.createElement('div')
+
+        this.spanPlayer = document.createElement('div')
+        this.spanEnemy = document.createElement('div')
+        this.spanSeparator = document.createElement('div')
+
+        this.spanPlayer.innerText = `${this.playerPoints}`
+        this.spanEnemy.innerText = `${this.enemyPoints}`
+        this.spanSeparator.innerText = `:`
+
+        this.spanPlayer.classList.add('noShowSB')
+        this.spanEnemy.classList.add('noShowSB')
+        this.spanSeparator.classList.add('noShowSB')
+
+        this.html.id = 'scoreBoard'
+        this.html.classList.add('glowing')
+
+
+        this.html.appendChild(this.spanPlayer)
+        this.html.appendChild(this.spanSeparator)
+        this.html.appendChild(this.spanEnemy)
+
+        this.top = height * 0.5 - this.height / 2
+        this.left = width * 0.5 - this.width / 2
+        this.html.style.left = this.left + 'px'
+        this.html.style.top = this.top + 'px'
+        this.html.style.width = this.width + 'px'
+        this.html.style.height = this.height + 'px'
+
+        // this.html.style.lineHeight = this.height + 'px'
+
+    }
+
+    this.updateScores = function(who) {
+        switch(who) {
+            case 'player': self.playerPoints++; break
+            case 'enemy': self.enemyPoints++; break
+        }
+        self.spanPlayer.innerText = `${self.playerPoints}`
+        self.spanEnemy.innerText = `${self.enemyPoints}`
+    }
+}
+
+function BtnStart(){
+    let self = this
+
+    this.height = 50
+    this.width  = 80
+
+    this.left = 0
+    this.top  = 0
+
+    this.html = null
+
+    this.createStart = function (width, height){
+        this.html    = document.createElement('div')
+
+        this.html.id = 'start'
+
+        this.html.innerText = 'Start'
+
+        this.left = width / 2 - this.width / 2
+        this.top  = height / 2 - this.height / 2
+
+        // this.html.style.height = `${this.height}px`
+        // this.html.style.width  = `${this.width}px` 
+        // this.html.style.left   = `${this.left}px`
+        // this.html.style.top    = `${this.top}px`
+    }
+}
+
 let game = new Game()
 game.setUpBoard()
-game.startGame()
+// game.startGame()
 console.log(game)

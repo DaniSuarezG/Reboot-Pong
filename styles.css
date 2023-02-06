@@ -3,6 +3,44 @@ body {
     justify-content: center;
 }
 
+#start {
+    display: flex;
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    left: 160px;
+    top: 325px;
+    background-color: red;
+    align-items: center;
+    justify-content: center;
+    /* text-align: center; */
+    box-sizing: border-box;
+    transition: 1s;
+    border: 5px solid black;
+    font: 30px Arial, sans-serif;
+    /* box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); */
+}
+
+#start:hover {
+    width: 100px;
+    height: 70px;
+    left: 150px;
+    top: 315px;
+    font: 40px Arial, sans-serif;
+    box-shadow: 20px 20px 20px 0 rgba(0,0,0,0.24), -20px -20px 20px 0 rgba(0,0,0,0.19), -20px 20px 20px 0 rgba(0,0,0,0.19), 20px -20px 20px 0 rgba(0,0,0,0.19);
+    transition: 1s;
+}
+
+#start:active {
+    /* display: none; */
+    width: 56px;
+    height: 40px;
+    left: 193px;
+    top: 345px;
+    font: 0px Arial, sans-serif;
+    transition: 0.2s;
+}
+
 #board {
     display: flex;
     position: relative;
@@ -15,7 +53,8 @@ body {
     min-height: 400px;*/
     background-color: navy;
     border: 15px solid black;
-    /*border-radius: 60px;*/
+    border-radius: 60px;
+    /* cursor: none; */
 }
 
 .paddle {
@@ -41,10 +80,41 @@ body {
 .ball {
     /*height: 30px;
     width: 30px;*/
-    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(95, 122, 154, 1) 100%);
+    /* background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(95, 122, 154, 1) 100%); */
     border-radius: 50%;
     position: absolute;
     /*top: calc(50% - 15px);
     left: calc(50% - 15px);*/
 }
 
+#scoreBoard {
+    position: absolute;
+    display: flex;
+    background: radial-gradient(circle, rgba(79,150,233,1) 0%, rgba(0,0,192,1) 100%); /*rgb(0, 0, 192);*/
+    color: azure;
+    /* background: linear-gradient(0deg, rgba(192,192,192,1) 25%, rgba(209,13,13,1) 100%); */
+    box-sizing: border-box;
+    text-align: center;
+    /* font-weight: 50; */
+    border-radius: 50%;
+    border: 2px solid silver;
+    /* box-shadow: inset 0px 0px 70px 5px silver; */
+    font: 100px Arial, sans-serif;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10%;
+}
+
+#scoreBoard > * {
+    /* position: absolute; */
+    /* border: 5px red; PREGUNTAR PORQUÉ NO SE VISUALIZA */
+    /* margin: 0 50px; */
+}
+
+.noShowSB {
+    display: none;
+}
+
+.showSB {
+    transition: 1.5s
+}
