@@ -1,3 +1,8 @@
+let backgroundMusic = new Audio('./assets/audio/background.mp3')
+let popSound = new Audio('https://www.epidemicsound.com/track/h7KUVVeWvh/')
+
+
+// backgroundMusic.play()
 /*
 function Board() {
     let player = document.querySelector('#player-paddle')
@@ -29,7 +34,6 @@ function Board() {
         //console.log("MOUSE: " + e.clientX)
         //console.log("PADDLE: " + parseInt(player.style.left.slice(0, player.style.left.length - 2)))
     }
-}
 
 //let game = new Board()*/
 
@@ -37,24 +41,37 @@ function Board() {
 
 function Game(){
     let self = this
+
     this.board = new Board()
+
     this.btnStart = new BtnStart()
+    this.btnReset = new BtnReset()
+    this.btnPause = new BtnPause()
+
     this.player = new Paddle()
     this.enemy  = new Paddle()
+
     this.scoreBoard = new ScoreBoard()
+
     this.ball = new Ball()
 
     this.timerId = null;
     this.timerIdSetUp = null;
+    this.timerIdEnemy = null
+
+    this.backgroundAudio = null;
+
+    this.pause = false
 
     this.world = null;
-
 
     this.setUpBoard = function () {
         this.world = document.querySelector('body')
 
         this.board.createBoard()
         this.btnStart.createStart(this.board.width, this.board.height)
+        this.btnReset.createReset(this.board.width, this.board.height)
+        this.btnPause.createPause(this.board.width, this.board.height)
 
         this.player.createPaddle('player', this.board.width, this.board.height)
         this.enemy.createPaddle('enemy', this.board.width, this.board.height)
@@ -67,12 +84,21 @@ function Game(){
         this.board.html.appendChild(this.player.html)
         this.board.html.appendChild(this.enemy.html)
         this.board.html.appendChild(this.btnStart.html)
+        this.board.html.appendChild(this.btnReset.html)
+        this.board.html.appendChild(this.btnPause.html)
 
         // this.board.html.addEventListener('mousemove', function(e) {
             //     self.mouseHandler(e)
             // })
             
         this.btnStart.html.onclick = self.startGame
+        /*function () {
+            backgroundMusic.pause()
+            self.pauseGame()
+        }*/
+        this.btnReset.html.onclick = self.resetGame
+
+        this.backgroundAudio = new Audio('./assets/audio/background.mp3')
 
         this.world.appendChild(this.board.html)
     }
@@ -107,14 +133,20 @@ function Game(){
     }
 
     this.enemyHandler = function() {
-        let enemyRight = this.ball.x + this.ball.width / 2 + (this.enemy.width / 2)
-        let enemyLeft  = this.ball.x + this.ball.width / 2 - (this.enemy.width / 2)
+        let enemyRight = this.enemy.left + this.enemy.width //this.ball.x + this.ball.width / 2 + (this.enemy.width / 2)
+        let enemyLeft  = this.enemy.left //this.ball.x + this.ball.width / 2 - (this.enemy.width / 2)
         
         let borderRight = this.board.width 
         let borderLeft  = 0 
-        if (enemyLeft > borderLeft && enemyRight < borderRight) {//} && enemyLeft > borderLeft) {
-            this.enemy.updateMove(this.ball.x + this.ball.width / 2 - this.enemy.width / 2)
-        }
+        // if (enemyLeft > borderLeft && enemyRight < borderRight) {//} && enemyLeft > borderLeft) {
+            if (enemyLeft < borderLeft || enemyRight > borderRight) {
+                this.enemy.dir *= -1
+            }
+            this.enemy.updateMove(20)
+
+            // this.enemy.updateMove(this.ball.x + this.ball.width / 2 - this.enemy.width / 2)
+        // }
+            // setInterval(this.enemy.updateMove(null), 40)
     }
 
     this.bounceHandler = function () {        
@@ -123,6 +155,13 @@ function Game(){
         }
         this.ball.playerCollision(this.player)
         this.ball.playerCollision(this.enemy)
+        // if (this.ball.playerCollision(this.enemy)) {
+        //     if (this.enemy.erratic) {
+        //         this.enemy.erratic--
+        //     } else {
+        //         this.enemy.erratic = Math.round(Math.random() * 10)
+        //     }
+        // }
     }
 
     this.startGame = function() {
@@ -132,6 +171,9 @@ function Game(){
             self.board.html.style.cursor = 'none'
 
             self.board.html.onmousemove = self.mouseHandler
+            self.btnReset.html.onclick = self.resetGame
+            self.btnPause.html.onclick = self.pauseGameBtn
+
             self.ball.html.style.display = ''
             self.player.html.style.display = ''
             self.enemy.html.style.display = ''
@@ -144,10 +186,20 @@ function Game(){
             self.scoreBoard.spanPlayer.classList.remove('noShowSB')
             self.scoreBoard.spanEnemy.classList.remove('noShowSB')
             self.scoreBoard.spanSeparator.classList.remove('noShowSB')
+
+            self.timerIdFaster = setInterval(function() {
+                self.ball.step++
+                console.log(`MAS RAPIDO ${self.ball.step}`)
+            }, 4000)
             // self.scoreBoard.spanPlayer.classList.add('showSB')
             // self.scoreBoard.spanEnemy.classList.add('showSB')
             // self.scoreBoard.spanSeparator.classList.add('showSB')
             
+            // self.timerIdEnemy = setInterval(this.enemy.updateMove(), 40)
+
+            popSound.play()
+            backgroundMusic.play()
+
             self.timerId = setInterval(function() {
                 self.ball.move()
                 self.bounceHandler()
@@ -158,15 +210,65 @@ function Game(){
 
     this.pauseGame = function () {
         clearInterval(self.timerId)
+        clearInterval(self.timerIdEnemy)
+        clearInterval(self.timerIdFaster)
+
         clearTimeout(self.timerIdSetUp)
+
         self.board.html.style.cursor = ''
         self.btnStart.html.style.display = ''
+
         self.btnStart.html.onclick = self.startGame
+
         self.board.html.onmousemove = null
-        // self.ball.html.style.display = 'none'
+
+        self.enemy.dir = 1
+
         self.player.resetPaddle(self.board.width, self.board.height)
         self.enemy.resetPaddle(self.board.width, self.board.height)
         self.ball.resetBall(self.board.width, self.board.height)
+    }
+
+    this.pauseGameBtn = function () {
+        if (self.pause) {
+            self.pause = false
+            self.startGame()
+        } else {
+            self.pause = true
+
+            backgroundMusic.pause()
+
+            clearInterval(self.timerId)
+            clearInterval(self.timerIdEnemy)
+            clearInterval(self.timerIdFaster)
+
+            self.board.html.onmousemove = ''
+        }
+
+        // backgroundMusic.pause()
+
+        // clearInterval(self.timerId)
+        // clearInterval(self.timerIdEnemy)
+        // clearInterval(self.timerIdFaster)
+
+        // self.board.html.onmousemove = null
+    }
+
+    this.resetGame = function () {
+        clearInterval(self.timerId)
+        clearInterval(self.timerIdEnemy)
+        clearInterval(self.timerIdFaster)
+
+        self.pause = false
+
+        self.world.removeChild(self.board.html)
+        self.setUpBoard()
+
+        backgroundMusic.load()
+
+        self.btnReset.html.onclick = ''
+        self.btnPause.html.onclick = ''
+
     }
 }
 
@@ -182,6 +284,8 @@ function Board(){
         this.html    = document.createElement('div')
 
         this.html.id = 'board'
+
+        this.html.classList.add('glowing')
 
         this.html.style.height = this.height + 'px'    
         this.html.style.width  = this.width + 'px' 
@@ -206,7 +310,7 @@ function Paddle(){
     this.createPaddle = function(classP, width, height){
         switch (classP) {
             case 'player': this.pos = 0.9; break
-            case 'enemy': this.pos = 0.1; break
+            case 'enemy': this.pos = 0.1; this.dir = 1; break
         }
 
         this.roll = classP
@@ -223,12 +327,36 @@ function Paddle(){
         this.top  = height * this.pos
         this.html.style.left = this.left + 'px'
         this.html.style.top  = this.top + 'px'
+
+        this.html.style.display = 'none'
+
+        // console.log(this)
     }
 
-    this.updateMove = function(left){
+    this.updateMove = function (left){
         switch (this.roll) {
             case 'player': self.left = left; break
-            case 'enemy': self.left = left; break //IMPLEMENTAR MOVIMIENTO ERRÁTICO
+            case 'enemy': 
+                // let left2 = 5
+                // let borderRight = board.width
+                // let borderLeft = 0 
+
+                // let enemyRight = ball.x + ball.width / 2 + (this.width / 2)
+                // let enemyLeft  = ball.x + ball.width / 2 - (this.width / 2)
+
+                // if (enemyLeft > borderLeft && enemyRight < borderRight) {//} && enemyLeft > borderLeft) {
+                //     console.log("ENTRA")
+                //     if (enemyLeft <= borderLeft || enemyRight > borderRight) {
+                //         left2 *= -1
+                //     }
+                    self.left += left * self.dir
+                // }
+                //     if (this.erratic) {
+                //         self.left = left; break 
+                //     } else {
+                //         self.left = width - left//IMPLEMENTAR MOVIMIENTO ERRÁTICO
+                //     }
+                // }
         }
         //self.left = left
         self.html.style.left = self.left + 'px'
@@ -241,6 +369,9 @@ function Paddle(){
         this.html.style.left = this.left + 'px'
         this.html.style.top  = this.top + 'px'
         this.html.style.display = 'none'
+        // if (this.roll == 'enemy') {
+        //     this.erratic = Math.round(Math.random() * 10);
+        // }
     }
 }
 
@@ -259,9 +390,8 @@ function Ball(){
     this.ballLeft = this.x
     this.ballRight = this.x + this.width
 
-    this.dir  = 'UR' // direccion
+    this.dir  = '' // direccion
     this.step = 5    // velocidad
-
     this.html = null;
 
     
@@ -276,7 +406,6 @@ function Ball(){
         this.html.classList.add('ball')
         this.html.classList.add('glowing')
     
-        
         this.x = width / 2
         this.y = height / 2
 
@@ -287,7 +416,13 @@ function Ball(){
         this.html.style.width  = `${this.width}px`
 
         this.html.style.display = 'none'
-        
+
+        switch (Math.ceil(Math.random() * 4)) {
+            case 1: this.dir = 'UL'; break
+            case 2: this.dir = 'UR'; break
+            case 3: this.dir = 'DL'; break
+            case 4: this.dir = 'DR'; break
+        }
     }
 
     this.resetBall = function(width, height) {
@@ -297,6 +432,14 @@ function Ball(){
         this.html.style.top  = `${this.y - this.width / 2}px`
         this.html.style.display = 'none'
 
+        this.step = 5
+
+        switch (Math.ceil(Math.random() * 4)) {
+            case 1: this.dir = 'UL'; break
+            case 2: this.dir = 'UR'; break
+            case 3: this.dir = 'DL'; break
+            case 4: this.dir = 'DR'; break
+        }
         // this.html.style.display = ''
     }
 
@@ -447,6 +590,7 @@ function Ball(){
                             self.dir = 'DR'
                             break
                     }
+                    // return true
                 };
                 break
         }
@@ -458,8 +602,8 @@ function Ball(){
 function ScoreBoard(){
     let self = this
 
-    this.width = 300
-    this.height = 300
+    this.width = 250
+    this.height = 250
 
     this.left = 0
     this.top = 0
@@ -541,6 +685,61 @@ function BtnStart(){
     }
 }
 
+function BtnReset() {
+    let self = this
+    this.height = 70
+    this.width = 139
+    this.left = 0
+    this.top = 0
+
+    this.html = null
+
+    this.createReset = function (width, height) {
+        this.html = document.createElement('div')
+
+        this.html.onmousemove = ''
+
+        this.html.id = 'btnReset'        
+
+        this.html.innerText = 'Reset'
+
+        this.left = width / 4 - this.width / 2
+        this.top = height + height / 10
+
+        this.html.style.left = this.left + 'px'
+        this.html.style.top = this.top + 'px'
+        this.html.style.width = this.width + 'px'
+        this.html.style.height = this.height + 'px'
+    }
+}
+
+function BtnPause() {
+    let self = this
+    this.height = 70
+    this.width = 139
+    this.left = 0
+    this.top = 0
+
+    this.html = null
+
+    this.createPause = function (width, height) {
+        this.html = document.createElement('div')
+
+        this.html.onmousemove = ''
+
+        this.html.id = 'btnPause'
+
+        this.html.innerText = 'Pause'
+
+        this.left = width / 4 * 3 - this.width / 2
+        this.top = height + height / 10
+
+        this.html.style.left = this.left + 'px'
+        this.html.style.top = this.top + 'px'
+        this.html.style.width = this.width + 'px'
+        this.html.style.height = this.height + 'px'
+    }
+}
 let game = new Game()
 game.setUpBoard()
 // game.startGame()
