@@ -694,8 +694,8 @@ function ScoreBoard(){
 function BtnStart(){
     let self = this
 
-    this.height = 50
-    this.width  = 80
+    this.width  = 130
+    this.height = 30
 
     this.left = 0
     this.top  = 0
@@ -721,10 +721,12 @@ function BtnStart(){
 
 function BtnReset() {
     let self = this
+
+    this.width = 140
     this.height = 70
-    this.width = 139
-    this.left = 0
+
     this.top = 0
+    this.left = 0
 
     this.html = null
 
@@ -740,17 +742,19 @@ function BtnReset() {
         this.left = width / 4 - this.width / 2
         this.top = height + height / 10
 
-        this.html.style.left = this.left + 'px'
-        this.html.style.top = this.top + 'px'
-        this.html.style.width = this.width + 'px'
-        this.html.style.height = this.height + 'px'
+        // this.html.style.left = this.left + 'px'
+        // this.html.style.top = this.top + 'px'
+        // this.html.style.width = this.width + 'px'
+        // this.html.style.height = this.height + 'px'
     }
 }
 
 function BtnPause() {
     let self = this
+
+    this.width = 140
     this.height = 70
-    this.width = 139
+
     this.left = 0
     this.top = 0
 
@@ -768,10 +772,10 @@ function BtnPause() {
         this.left = width / 4 * 3 - this.width / 2
         this.top = height + height / 10
 
-        this.html.style.left = this.left + 'px'
-        this.html.style.top = this.top + 'px'
-        this.html.style.width = this.width + 'px'
-        this.html.style.height = this.height + 'px'
+        // this.html.style.left = this.left + 'px'
+        // this.html.style.top = this.top + 'px'
+        // this.html.style.width = this.width + 'px'
+        // this.html.style.height = this.height + 'px'
     }
 }
 let game = new Game()
