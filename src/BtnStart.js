@@ -1,15 +1,17 @@
-function BtnStart() {
-    let self = this
+class BtnStart {
+    constructor() {
+        let self = this
 
-    this.width = 130
-    this.height = 30
+        this.width = 130
+        this.height = 30
 
-    this.left = 0
-    this.top = 0
+        this.left = 0
+        this.top = 0
 
-    this.html = null
+        let html = null
+    }
 
-    this.createStart = function (width, height) {
+    createStart(width, height) {
         this.html = document.createElement('div')
 
         this.html.id = 'start'

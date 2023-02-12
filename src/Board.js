@@ -1,11 +1,13 @@
-function Board() {
-    this.height = 700
-    this.ratio = 4 / 7
-    this.width = this.height * this.ratio
+class Board {
+    constructor() {
+        this.height = 700
+        this.ratio = 4 / 7
+        this.width = this.height * this.ratio
 
-    this.html = null
+        this.html = null
+    }
 
-    this.createBoard = function () {
+    createBoard() {
         this.html = document.createElement('div')
 
         this.html.id = 'board'

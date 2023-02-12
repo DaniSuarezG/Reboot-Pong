@@ -1,15 +1,17 @@
-function BtnPause() {
-    let self = this
+class BtnPause {
+    constructor() {
+        let self = this
 
-    this.width = 140
-    this.height = 70
+        this.width = 140
+        this.height = 70
 
-    this.left = 0
-    this.top = 0
+        this.left = 0
+        this.top = 0
 
-    this.html = null
+        this.html = null
+    }
 
-    this.createPause = function (width, height) {
+    createPause(width, height) {
         this.html = document.createElement('div')
 
         this.html.onmousemove = ''

@@ -1,15 +1,17 @@
-function BtnReset() {
-    let self = this
+class BtnReset {
+    constructor() {
+        let self = this
 
-    this.width = 140
-    this.height = 70
+        this.width = 140
+        this.height = 70
 
-    this.top = 0
-    this.left = 0
+        this.top = 0
+        this.left = 0
 
-    this.html = null
+        this.html = null
+    }
 
-    this.createReset = function (width, height) {
+    createReset(width, height) {
         this.html = document.createElement('div')
 
         this.html.onmousemove = ''

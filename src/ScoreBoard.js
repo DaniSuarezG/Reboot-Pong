@@ -1,18 +1,20 @@
-function ScoreBoard() {
-    let self = this
+class ScoreBoard {
+    constructor() {
+        let self = this
 
-    this.width = 250
-    this.height = 250
+        this.width = 250
+        this.height = 250
 
-    this.left = 0
-    this.top = 0
+        this.left = 0
+        this.top = 0
 
-    this.playerPoints = 0
-    this.enemyPoints = 0
+        this.playerPoints = 0
+        this.enemyPoints = 0
 
-    this.html = null
+        this.html = null
+    }
 
-    this.createScoreBoard = function (width, height) {
+    createScoreBoard(width, height) {
         this.html = document.createElement('div')
 
         this.spanPlayer = document.createElement('div')
@@ -44,13 +46,14 @@ function ScoreBoard() {
 
     }
 
-    this.updateScores = function (who) {
+    set updateScores(who) {
+        // console.log(this)
         switch (who) {
-            case 'player': self.playerPoints++; break
-            case 'enemy': self.enemyPoints++; break
+            case 'player': this.playerPoints++; break
+            case 'enemy': this.enemyPoints++; break
         }
-        self.spanPlayer.innerText = `${self.playerPoints}`
-        self.spanEnemy.innerText = `${self.enemyPoints}`
+        this.spanPlayer.innerText = `${this.playerPoints}`
+        this.spanEnemy.innerText = `${this.enemyPoints}`
     }
 }
 

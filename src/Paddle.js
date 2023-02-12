@@ -1,18 +1,20 @@
-function Paddle() {
-    let self = this
+class Paddle {
+    constructor() {
+        let self = this
 
-    this.height = 20 //DEFAULT: 20
-    this.width = 150 //DEFAULT: 150
+        this.height = 20 //DEFAULT: 20
+        this.width = 150 //DEFAULT: 150
 
-    this.left = 0
-    this.top = 0
-    this.pos = 0
+        this.left = 0
+        this.top = 0
+        this.pos = 0
 
-    this.roll = ""
+        this.roll = ""
 
-    this.html = null
+        this.html = null
+    }
 
-    this.createPaddle = function (classP, width, height) {
+    createPaddle(classP, width, height) {
         switch (classP) {
             case 'player': this.pos = 0.9; break
             case 'enemy': this.pos = 0.1; this.dir = 1; break
@@ -36,17 +38,17 @@ function Paddle() {
         this.html.style.display = 'none'
     }
 
-    this.updateMove = function (left) {
+    set updateMove(left) {
         switch (this.roll) {
-            case 'player': self.left = left; break
+            case 'player': this.left = left; break
             case 'enemy':
-                self.left += left * self.dir
+                this.left += left * this.dir
         }
 
-        self.html.style.left = self.left + 'px'
+        this.html.style.left = this.left + 'px'
     }
 
-    this.resetPaddle = function (width, height) {
+    resetPaddle(width, height) {
         this.left = ((width / 2) - (this.width / 2))
         this.top = height * this.pos
         this.html.style.left = this.left + 'px'
